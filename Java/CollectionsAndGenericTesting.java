@@ -6,7 +6,14 @@ public class CollectionsAndGenericTesting {
     public static void main(String[] args) {
         DateTimeFormatter formatter = DateTimeFormatter.ofPattern("d-MMM-yyyy");
 
+        // java.util.Scanner scanner = new java.util.Scanner(System.in);
+        // System.out.print("Enter your name: ");
+        // String name = scanner.nextLine();
+
+        String[] stringArray = {"1", "2", "3", "4", "5"};
+
         // #region Non-Generic-Collections
+        java.util.ArrayList<String> valsList = new java.util.ArrayList<>(java.util.Arrays.asList("Val1", "Val2"));
 
         // ArrayList (non-generic equivalent using Object)
         ArrayList<Object> al = new ArrayList<>();
