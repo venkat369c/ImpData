@@ -1,0 +1,98 @@
+<html>
+  <script src="https://unpkg.com/react@16/umd/react.development.js"></script>
+  <script src="https://unpkg.com/react-dom@16/umd/react-dom.development.js"></script>
+  <script src="https://unpkg.com/babel-standalone@6.15.0/babel.min.js"></script>
+  <body>
+    <div id="root"></div>
+
+    <script type="text/babel">
+      class ReactClassComponent extends React.Component {
+        constructor(props) {
+          super(props);
+          this.state = {
+            quantity: 1,
+            logs: [this.getLog("constructor")],
+          };
+        }
+
+        getLog(message) {
+          const now = new Date().toLocaleTimeString();
+          return `${now} - ${message}`;
+        }
+
+        static getDerivedStateFromProps(props, state) {
+          return null;
+        }
+
+        componentDidMount() {
+          this.setState((prev) => ({
+            logs: [...prev.logs, this.getLog("componentDidMount")],
+          }));
+        }
+
+        shouldComponentUpdate(nextProps, nextState) {
+          return true;
+        }
+
+        getSnapshotBeforeUpdate(prevProps, prevState) {
+          return null;
+        }
+
+        componentDidUpdate(prevProps, prevState) {
+          if (prevState.quantity !== this.state.quantity) {
+            this.setState((prev) => ({
+              logs: [...prev.logs, this.getLog("componentDidUpdate")],
+            }));
+          }
+        }
+
+        componentWillUnmount() {
+          alert(this.getLog("componentWillUnmount"));
+        }
+
+        handleIncrease = () => {
+          this.setState((prev) => ({
+            quantity: prev.quantity + 1,
+            logs: [...prev.logs, this.getLog("Button clicked: Increase")],
+          }));
+        };
+
+        render() {
+          const { quantity, logs } = this.state;
+          return (
+            <div>
+              <h2>Quantity: {quantity}</h2>
+              <button onClick={this.handleIncrease}>Increase</button>
+              <h3>Lifecycle Logs:</h3>
+              <ul style={{ fontFamily: "monospace", fontSize: "14px" }}>
+                {logs.map((log, i) => (
+                  <li key={i}>{log}</li>
+                ))}
+              </ul>
+            </div>
+          );
+        }
+      }
+
+      class App extends React.Component {
+        state = { show: true };
+
+        toggle = () => this.setState((prev) => ({ show: !prev.show }));
+
+        render() {
+          return (
+            <div>
+              <button onClick={this.toggle}>
+                {this.state.show ? "UnMount Component(UnLoad)" : "Mount Component(Load)"}
+              </button>
+              <hr />
+              {this.state.show && <ReactClassComponent />}
+            </div>
+          );
+        }
+      }
+
+      ReactDOM.render(<App />, document.getElementById("root"));
+    </script>
+  </body>
+</html>
