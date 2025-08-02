@@ -17,7 +17,7 @@ public class Main {
 
         System.out.println("*** FirstOrDefault equivalent ***");
         studentList.stream()
-            .filter(s -> s.getAge() > 18)
+            .filter(studentObj -> studentObj.getAge() > 18)
             .findFirst()
             .ifPresentOrElse(
                 s -> System.out.println("First match: " + s.getStudentName()),
@@ -26,7 +26,7 @@ public class Main {
 
         System.out.println("*** LastOrDefault equivalent ***");
         studentList.stream()
-            .filter(s -> s.getAge() > 18)
+            .filter(studentObj -> studentObj.getAge() > 18)
             .reduce((first, second) -> second)
             .ifPresentOrElse(
                 s -> System.out.println("Last match: " + s.getStudentName()),
@@ -35,9 +35,10 @@ public class Main {
 
         System.out.println("*** Where with index (AtomicInteger) ***");
         AtomicInteger index = new AtomicInteger(0);
-        studentList.stream()
-            .filter(s -> index.getAndIncrement() % 2 == 0)
-            .forEach(s -> System.out.println(s.getStudentName()));
+        List<Student> filteredResult = studentList.stream()
+            .filter(studentObj -> index.getAndIncrement() % 2 == 0)
+            .collect(Collectors.toList());
+        filteredResult.forEach(s -> System.out.println(s.getStudentName()));
 
         System.out.println("*** ThenBy with OrderBy ***");
         studentList.stream()
@@ -48,9 +49,9 @@ public class Main {
         System.out.println("*** GroupBy ***");
         studentList.stream()
             .collect(Collectors.groupingBy(Student::getAge))
-            .forEach((age, students) -> {
+            .forEach((age, studentGroup) -> {
                 System.out.println("Age Group: " + age);
-                students.forEach(s -> System.out.println("Student Name: " + s.getStudentName()));
+                studentGroup.forEach(s -> System.out.println("Student Name: " + s.getStudentName()));
             });
 
         List<Standard> standardList = Arrays.asList(
@@ -61,9 +62,9 @@ public class Main {
 
         System.out.println("*** Join ***");
         studentList.stream()
-            .flatMap(student -> standardList.stream()
-                .filter(std -> Objects.equals(std.getStandardID(), student.getStandardID()))
-                .map(std -> student.getStudentName() + " - " + std.getStandardName()))
+            .flatMap(studentObj -> standardList.stream()
+                .filter(std -> Objects.equals(std.getStandardID(), studentObj.getStandardID()))
+                .map(std -> studentObj.getStudentName() + " - " + std.getStandardName()))
             .forEach(System.out::println);
 
         System.out.println("*** GroupJoin / Left Outer Join ***");
@@ -71,34 +72,34 @@ public class Main {
             .collect(Collectors.toMap(
                 Function.identity(),
                 std -> studentList.stream()
-                    .filter(s -> Objects.equals(s.getStandardID(), std.getStandardID()))
+                    .filter(studentObj -> Objects.equals(studentObj.getStandardID(), std.getStandardID()))
                     .collect(Collectors.toList())
             ))
-            .forEach((std, students) -> {
+            .forEach((std, studentGroup) -> {
                 System.out.println(std.getStandardName());
-                students.forEach(s -> System.out.println(s.getStudentName()));
+                studentGroup.forEach(s -> System.out.println(s.getStudentName()));
             });
 
         System.out.println("*** Select ***");
         studentList.stream()
-            .map(s -> Map.of("Name", s.getStudentName(), "Age", s.getAge()))
+            .map(studentObj -> Map.of("Name", studentObj.getStudentName(), "Age", studentObj.getAge()))
             .forEach(item ->
                 System.out.println("Student Name: " + item.get("Name") + ", Age: " + item.get("Age")));
 
         System.out.println("*** All ***");
         boolean areAllStudentsTeenAger = studentList.stream()
-            .allMatch(s -> s.getAge() > 12 && s.getAge() < 20);
+            .allMatch(studentObj -> studentObj.getAge() > 12 && studentObj.getAge() < 20);
         System.out.println(areAllStudentsTeenAger);
 
         System.out.println("*** Any ***");
         boolean isAnyStudentTeenAger = studentList.stream()
-            .anyMatch(s -> s.getAge() > 12 && s.getAge() < 20);
+            .anyMatch(studentObj -> studentObj.getAge() > 12 && studentObj.getAge() < 20);
         System.out.println(isAnyStudentTeenAger);
 
         System.out.println("*** Contains (custom comparator) ***");
-        Student searchStudent = new Student(3, "Bill", 18, 2);
+        Student searchStudentObj = new Student(3, "Bill", 18, 2);
         boolean contains = studentList.stream()
-            .anyMatch(s -> new StudentComparer().equals(s, searchStudent));
+            .anyMatch(studentObj -> new StudentComparer().equals(studentObj, searchStudentObj));
         System.out.println("Contains Bill? " + contains);
 
         System.out.println("Successfully completed !");
